@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chessboard Square Selector</title>
+    <style>
+        .board {
+            width: 100%;
+            max-width: 500px;
+            display: grid;
+            grid-template-columns: repeat(8, 1fr);
+            margin: 0 auto;
+        }
+
+        .square {
+            padding-top: 12.5%;
+            position: relative;
+            font-size: calc(1.5vh + 1.5vw);
+            font-weight: bold;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .light {
+            background-color: #eee;
+        }
+
+        .dark {
+            background-color: #444;
+        }
+
+        #feedback, #prompt, #perspective {
+            margin-top: 20px;
+            text-align: center;
+        }
+
+        button {
+            padding: 10px 15px;
+            margin-right: 10px;
+        }
+
+    </style>
+</head>
+
+<body>
+    <h2 style="text-align:center;">Chessboard</h2>
+    <div style="text-align:center;">
+        <button id="togglePerspective">Toggle Perspective</button>
+        <button id="toggleCoordinates">Toggle Coordinates</button>
+    </div>
+    <div id="perspective" style="text-align:center;">View from: White's perspective</div>
+    <div class="board"></div>
+    <div id="prompt" style="text-align:center;"></div>
+    <div id="feedback" style="text-align:center;"></div>
+
+    <script>
+        const boardEl = document.querySelector('.board');
+        const togglePerspectiveBtn = document.querySelector('#togglePerspective');
+        const toggleCoordinatesBtn = document.querySelector('#toggleCoordinates');
+        const perspectiveEl = document.querySelector('#perspective');
+        const promptEl = document.querySelector('#prompt');
+        const feedbackEl = document.querySelector('#feedback');
+
+        let targetSquare = "";
+        let isWhitePerspective = true;
+        let showCoordinates = false;
+
+        togglePerspectiveBtn.addEventListener('click', () => {
+            isWhitePerspective = !isWhitePerspective;
+            perspectiveEl.textContent = `View from: ${isWhitePerspective ? "White's" : "Black's"} perspective`;
+            boardEl.innerHTML = ''; 
+            generateBoard();
+        });
+
+        toggleCoordinatesBtn.addEventListener('click', () => {
+            showCoordinates = !showCoordinates;
+            updateCoordinatesVisibility();
+        });
+
+        function updateCoordinatesVisibility() {
+            document.querySelectorAll('.square').forEach(square => {
+                square.textContent = showCoordinates ? square.getAttribute('data-pos') : '\u00A0';
+            });
+        }
+
+        function generateBoard() {
+            for (let i = 0; i < 8; i++) {
+                for (let j = 0; j < 8; j++) {
+                    const squareEl = document.createElement('div');
+                    squareEl.classList.add('square');
+
+                    const row = isWhitePerspective ? i : 7 - i;
+                    const col = isWhitePerspective ? j : 7 - j;
+
+                    if ((row + col) % 2 === 0) {
+                        squareEl.classList.add('light');
+                    } else {
+                        squareEl.classList.add('dark');
+                    }
+
+                    const pos = `${String.fromCharCode(97 + col)}${8 - row}`;
+                    squareEl.setAttribute('data-pos', pos);
+                    squareEl.textContent = '\u00A0';
+
+                    squareEl.addEventListener('click', () => {
+                        if (targetSquare) {
+                            if (squareEl.getAttribute('data-pos') === targetSquare) {
+                                feedbackEl.textContent = 'Correct!';
+                                generateRandomSquare();
+                            } else {
+                                feedbackEl.textContent = 'Incorrect. Try again.';
+                            }
+                        }
+                    });
+
+                    boardEl.appendChild(squareEl);
+                }
+            }
+            updateCoordinatesVisibility();
+        }
+
+        function generateRandomSquare() {
+            const randomFile = String.fromCharCode(97 + Math.floor(Math.random() * 8));
+            const randomRank = 1 + Math.floor(Math.random() * 8);
+            targetSquare = `${randomFile}${randomRank}`;
+            promptEl.textContent = `Please click on square ${targetSquare}`;
+        }
+
+        function adjustBoardSize() {
+            boardEl.style.height = `${boardEl.offsetWidth}px`;
+        }
+
+        adjustBoardSize();
+        window.addEventListener('resize', adjustBoardSize);
+
+        generateBoard();
+        generateRandomSquare();
+    </script>
+</body>
+
+</html>
+
