@@ -10,11 +10,12 @@ you to click on a specific square such as "a1" then tells you if you are right o
 
 An interactive trainer to teach you the coordinates of a chess board. 
 /////////
-
+///////////
 chessboard1.html  simply shows the coordinates when you click on a square.
 ![1](https://github.com/4usaco/chessboard/assets/128197007/5de2722e-c244-4914-8102-74e2abb45dc0)
 
-//////////////////////////////////////////
+///////////
+//////////
 chessboard2.html a more featured version of chessboard1.html 
 
 ![2](https://github.com/4usaco/chessboard/assets/128197007/c977fd25-7e9d-4fed-a35a-00df09a2d2bd)
