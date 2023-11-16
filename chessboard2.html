@@ -1,0 +1,121 @@
+
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Interactive Chessboard</title>
+    <style>
+        .chessboard {
+            width: 320px;
+            height: 320px;
+            margin: 20px auto;
+            border: 5px solid #333;
+            display: grid;
+            grid-template: repeat(8, 1fr) / repeat(8, 1fr);
+        }
+        .square {
+            width: 40px;
+            height: 40px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 24px;
+        }
+        .light {
+            background-color: #f0d9b5;
+        }
+        .dark {
+            background-color: #b58863;
+        }
+        .white-piece {
+            color: #fff;
+            text-shadow: -1px -1px 0 #000, 1px -1px 0 #000, -1px 1px 0 #000, 1px 1px 0 #000;
+        }
+        .black-piece {
+            color: #444;
+        }
+        .button {
+            display: block;
+            margin: 10px auto;
+            padding: 5px 10px;
+            background-color: #333;
+            color: white;
+            border: none;
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div id="chessboard" class="chessboard"></div>
+    <button id="toggleView" class="button">Toggle View</button>
+    <button id="toggleAllCoordinates" class="button">Toggle All Coordinates</button>
+
+    
+    <script>
+    const pieces = {
+        'p': '♟', 'r': '♜', 'n': '♞', 'b': '♝', 'q': '♛', 'k': '♚',
+        'P': '♙', 'R': '♖', 'N': '♘', 'B': '♗', 'Q': '♕', 'K': '♔'
+    };
+    let whitePerspective = true;
+    let showAllCoordinates = false;
+
+    function createChessboard() {
+        const board = document.getElementById('chessboard');
+        board.innerHTML = ''; // Clear the board
+        const rows = whitePerspective ? '87654321' : '12345678';
+        const cols = whitePerspective ? 'abcdefgh' : 'hgfedcba';
+        for (let i = 0; i < 8; i++) {
+            for (let j = 0; j < 8; j++) {
+                const square = document.createElement('div');
+                square.id = cols[j] + rows[i];
+                square.className = 'square ' + ((i + j) % 2 === 0 ? 'light' : 'dark');
+                square.onclick = function() { toggleCoordinate(this); };
+                setPiece(square, i, j);
+                if (showAllCoordinates) {
+                    square.textContent = square.id;
+                }
+                board.appendChild(square);
+            }
+        }
+    }
+
+    function setPiece(square, row, col) {
+        const initialRows = ['rnbqkbnr', 'pppppppp', '        ', '        ', '        ', '        ', 'PPPPPPPP', 'RNBQKBNR'];
+        const piece = initialRows[whitePerspective ? row : 7 - row][whitePerspective ? col : 7 - col];
+        if (!showAllCoordinates) {
+            square.textContent = pieces[piece] || '';
+        }
+        if ('prnbqk'.includes(piece)) {
+            square.classList.add('black-piece');
+        } else if ('PRNBQK'.includes(piece)) {
+            square.classList.add('white-piece');
+        }
+    }
+
+    function toggleCoordinate(square) {
+        if (!showAllCoordinates) {
+            if (!square.dataset.showingCoordinate) {
+                square.dataset.originalText = square.textContent;
+                square.textContent = square.id;
+                square.dataset.showingCoordinate = true;
+            } else {
+                square.textContent = square.dataset.originalText;
+                delete square.dataset.showingCoordinate;
+            }
+        }
+    }
+
+    document.getElementById('toggleView').onclick = function() {
+        whitePerspective = !whitePerspective;
+        createChessboard();
+    };
+
+    document.getElementById('toggleAllCoordinates').onclick = function() {
+        showAllCoordinates = !showAllCoordinates;
+        createChessboard();
+    };
+
+    window.onload = createChessboard;
+</script>
+
+</body>
+</html>
